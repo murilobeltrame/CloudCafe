@@ -31,11 +31,11 @@ function renderCafe(doc) {
 }
 
 //GETTING DATA
-cafesCollection /*.where('city', '==', 'manchester')*/ /*.orderBy('name')*/ .get().then(function(snapshot) {
-    snapshot.docs.forEach(function(doc) {
-        renderCafe(doc);
-    });
-});
+// cafesCollection /*.where('city', '==', 'manchester')*/ /*.orderBy('name')*/ .get().then(function(snapshot) {
+//     snapshot.docs.forEach(function(doc) {
+//         renderCafe(doc);
+//     });
+// });
 
 //SAVING DATA
 form.addEventListener('submit', function(e) {
@@ -46,5 +46,20 @@ form.addEventListener('submit', function(e) {
     }).then(function() {
         form.name.value = '';
         form.city.value = '';
+    });
+});
+
+// REAL TIME DATABASE
+
+cafesCollection.orderBy('city').onSnapshot(function(snapshot) {
+    var changes = snapshot.docChanges();
+    changes.forEach(function(change) {
+        //console.log(change.doc.data());
+        if (change.type === 'added') {
+            renderCafe(change.doc);
+        } else if (change.type === 'removed') {
+            var li = cafelist.querySelector('[data-id=' + change.doc.id + ']');
+            cafelist.removeChild(li);
+        }
     });
 });
